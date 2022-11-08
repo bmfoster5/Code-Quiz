@@ -56,3 +56,9 @@ h1 {
 #submit {
     cursor: pointer;
 }
+.hide {
+    display: none;
+}
+#end-screen {
+    display:none;
+}
