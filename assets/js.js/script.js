@@ -2,27 +2,27 @@
 var myQuestions = [
     {
         title: "Commonly used data types DO NOT include:",
-        choice: ['Strings', 'Boolean', 'Alerts', 'Numbers'],
+        choices: ['Strings', 'Boolean', 'Alerts', 'Numbers'],
         correctAnswer: 'Alerts'
     },
     {
         title: "Arrays in JavaScript can be used to store _____.",
-        choice: ['Numbers & Strings', 'Other Arrays', 'Booleans', 'All of the above'],
+        choices: ['Numbers & Strings', 'Other Arrays', 'Booleans', 'All of the above'],
         correctAnswer: 'All of the above'
     },
     {
         title: "String values must be enclosed within _____ when being assigned to variables.",
-        choice: ['Commas', 'Curly Brackets', 'Quotes', 'Parentheses'],
+        choices: ['Commas', 'Curly Brackets', 'Quotes', 'Parentheses'],
         correctAnswer: 'Quotes'
     },
     {
         title: "The condition of an if / else statement is inclosed in _____.",
-        choice: ['Square Brackets', 'Curly Brackets', 'Quotes', 'Parentheses'],
+        choices: ['Square Brackets', 'Curly Brackets', 'Quotes', 'Parentheses'],
         correctAnswer: 'Parantheses'
     },
     {
         title: "A very useful tool used during development and debugging for printing content to the debugger is:",
-        choice: ['JavaScript', 'Terminal / Bash', 'For Loops', 'Console Log'],
+        choices: ['JavaScript', 'Terminal / Bash', 'For Loops', 'Console Log'],
         correctAnswer: 'Console Log'
     }
 
@@ -41,9 +41,16 @@ var timeEl = document.getElementById("time");
 var scoreCounter = 0;
 var scoreTracker = 0;
 var timer;
+var questionWrapper = document.querySelector("#question-wrapper")
 var timerCount;
-
+var timeLeft = 30;
+var questionTitle = document.querySelector("#question-title");
+var startScreen = document.querySelector("#start-screen")
 var questionCounter = 0;
+var answerChoices = document.querySelector("#choices");
+var finalScore = document.querySelector("#final-score");
+var initials = document.querySelector("#initials");
+var submitButton = document.querySelector("#submit");
 
 // Load page
 function init() {
@@ -59,7 +66,6 @@ function startQuiz() {
 
 // Set function timer after quiz begins
 function startTimer() {
-    var timeLeft = 30;
 
     var timeInterval = setInterval(function () {
 
@@ -74,12 +80,16 @@ function startTimer() {
             timeLeft = 0;
             ;
         }
+
+        if(questionCounter >= myQuestions.length) {
+            clearInterval(timeInterval)
+        }
     }, 1000);
 }
 
 function hideStart() {
-    var wrapper = document.querySelector(".wrapper");
-    wrapper.setAttribute("style", "display: none;");
+    startScreen.setAttribute("style", "display: none;");
+    getQuestion();
 }
 
 startButton.addEventListener('click', function () {
@@ -87,28 +97,37 @@ startButton.addEventListener('click', function () {
     hideStart();
 })
 
-// function getQuestion() {
-//     var currentQuestion = myQuestions[questionCounter];
-//     for (var i = 0; i < myQuestions.length; i++) {
-//         myQuestions.choice.
-// }
-// }
+function getQuestion() {
+    var currentQuestion = myQuestions[questionCounter];
+    questionTitle.textContent = currentQuestion.title;
+    questionWrapper.removeAttribute("class", "hide")
+    answerChoices.innerHTML = " "
+    currentQuestion.choices.forEach(function (choice) {
+        var choiceButton = document.createElement("button")
+        choiceButton.textContent = choice;
+        choiceButton.setAttribute("value", choice);
+        // add click event here to check answer
+        choiceButton.onclick = checkAnswer;
+        answerChoices.append(choiceButton)
+    })
+}
 
 // Attach event listener to start button to call startGame function on click
-
-// Call next question and check answer
-choice.addEventListener("click", function () {
-    if (choice === correctAnswer) {
-        getQuestion();
+function checkAnswer() {
+    if (this.value === myQuestions[questionCounter].correctAnswer) {
+        console.log("Correct!")
+    } else {
+        console.log("incorrect")
+        timeLeft = timeLeft - 5;
+        timeEl.textContent = timeLeft;
+    }
+    questionCounter++
+    if (questionCounter === myQuestions.length) {
+        showEnd()
     } else {
         getQuestion();
-        timeLeft - 5;
     }
-})
-
-
-
-
+}
 
 // Create function to store Highscores
 function getScores() {
@@ -139,7 +158,25 @@ function showScores() {
 }
 
 function showEnd() {
-    var endScreen = document.getElementById("end-screen")
-    if (endScreen = null)
-    
+    var endScreen = document.querySelector("#end-screen")
+    questionWrapper.setAttribute("class", "hide");
+    endScreen.removeAttribute("class", "hide");
+    finalScore.textContent = timeLeft;
 }
+
+function submitScore() {
+
+var scoreArray = JSON.parse(localStorage.getItem("scores"))||[];
+var newScore = {
+    name: initials.value, 
+    score: timeLeft
+}
+scoreArray.push(newScore)
+localStorage.setItem("scores", JSON.stringify(scoreArray))
+// Only add the index of score array.length -1 
+}
+
+
+
+
+submitButton.onclick=submitScore
